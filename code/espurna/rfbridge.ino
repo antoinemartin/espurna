@@ -96,12 +96,17 @@ void _rfbWebSocketOnSend(JsonObject& root) {
             node["data"] = rfbRetrieve(id, status == 1);
         }
     }
+    JsonArray& rfbnames = root.createNestedArray("rfbNames");
+    for (byte id=0; id<relayCount(); id++) {
+        rfbnames.add( rfbRetrieveName(id));
+    }    
 }
 
 void _rfbWebSocketOnAction(uint32_t client_id, const char * action, JsonObject& data) {
     if (strcmp(action, "rfblearn") == 0) rfbLearn(data["id"], data["status"]);
     if (strcmp(action, "rfbforget") == 0) rfbForget(data["id"], data["status"]);
     if (strcmp(action, "rfbsend") == 0) rfbStore(data["id"], data["status"], data["data"].as<const char*>());
+    if (strcmp(action, "rfbname") == 0) rfbName(data["id"], data["data"].as<const char*>());
 }
 
 void _rfbAck() {
@@ -436,9 +441,23 @@ void rfbStore(unsigned char id, bool status, const char * code) {
     setSetting(key, code);
 }
 
+void rfbName(unsigned char id, const char * name) {
+    DEBUG_MSG_P(PSTR("[RFBRIDGE] Storing name %d => '%s'\n"), id, name);
+    char key[12] = {0};
+    snprintf_P(key, sizeof(key), PSTR("rfbname%d"), id);
+    setSetting(key, name);
+}
+
 String rfbRetrieve(unsigned char id, bool status) {
     char key[8] = {0};
     snprintf_P(key, sizeof(key), PSTR("rfb%s%d"), status ? "ON" : "OFF", id);
+    return getSetting(key);
+}
+
+String rfbRetrieveName(unsigned char id) {
+    DEBUG_MSG_P(PSTR("[RFBRIDGE] Getting name %d\n"), id);
+    char key[12] = {0};
+    snprintf_P(key, sizeof(key), PSTR("rfbname%d"), id);
     return getSetting(key);
 }
 

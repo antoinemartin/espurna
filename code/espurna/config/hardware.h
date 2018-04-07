@@ -604,7 +604,7 @@
     #define RELAY_PROVIDER      RELAY_PROVIDER_RFBRIDGE
 
     #ifndef DUMMY_RELAY_COUNT
-    #define DUMMY_RELAY_COUNT   8
+    #define DUMMY_RELAY_COUNT   16
     #endif
 
     // Remove UART noise on serial line

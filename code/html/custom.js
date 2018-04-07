@@ -889,13 +889,19 @@ function rfbSend() {
     sendAction("rfbsend", {id: input.attr("data-id"), status: input.attr("data-status"), data: input.val()});
 }
 
+function rfbName() {
+    var parent = $(this).parents(".pure-g");
+    var input = $("input", parent);
+    sendAction("rfbname", {id: input.attr("data-id"), data: input.val()});
+}
+
 function addRfbNode() {
 
     var numNodes = $("#rfbNodes > legend").length;
 
     var template = $("#rfbNodeTemplate").children();
     var line = $(template).clone();
-    var status = true;
+    var status = false;
     $("span", line).html(numNodes);
     $(line).find("input").each(function() {
         $(this).attr("data-id", numNodes);
@@ -905,6 +911,7 @@ function addRfbNode() {
     $(line).find(".button-rfb-learn").on("click", rfbLearn);
     $(line).find(".button-rfb-forget").on("click", rfbForget);
     $(line).find(".button-rfb-send").on("click", rfbSend);
+    $(line).find(".button-rfb-name").on("click", rfbName);
     line.appendTo("#rfbNodes");
 
     return line;
@@ -971,6 +978,15 @@ function processData(data) {
             for (i in nodes) {
                 var node = nodes[i];
                 $("input[name='rfbcode'][data-id='" + node.id + "'][data-status='" + node.status + "']").val(node.data);
+            }
+            return;
+        }
+
+        if ("rfbNames" === key) {
+            var nodes = data.rfbNames;
+            for (i in nodes) {
+                var name = nodes[i];
+                $("input[name='rfbname'][data-id='" + i + "']").val(name);
             }
             return;
         }
